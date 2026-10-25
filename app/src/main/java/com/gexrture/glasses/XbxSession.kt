@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import com.gexrture.panel.PanelController
+import com.gexrture.pose.PoseTracker
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -110,6 +112,11 @@ class XbxSession(
     private var mainJob: Job? = null
     private var heartbeatJob: Job? = null
     private var mcuDrainJob: Job? = null
+
+    /** Head orientation from this session's IMU stream (M2). Fed on the IMU reader thread. */
+    val tracker = PoseTracker()
+
+    fun pose(): PoseTracker.PoseSnapshot? = tracker.latest()
 
     @Volatile private var zeroRequested = false
 
@@ -351,6 +358,11 @@ class XbxSession(
                         log("IMU init report ts=${p.timestampNs}")
                     }
                     is XbxProtocol.ImuPacket.Sample -> {
+                        tracker.onSample(
+                            p.gx.toDouble(), p.gy.toDouble(), p.gz.toDouble(),
+                            p.ax.toDouble(), p.ay.toDouble(), p.az.toDouble(),
+                            p.timestampNs, System.nanoTime(),
+                        )
                         if (firstTs < 0) {
                             firstTs = p.timestampNs
                             log("First sample (raw ${n}B): ${buf.hexHead(n)}")
@@ -441,7 +453,12 @@ class XbxSession(
                         "hb=${st.heartbeatsSent}/fail=${st.heartbeatWriteFailures} acks=${st.mcuReportsDrained} ev=${st.mcuEvents} " +
                         "btn=${st.buttonEvents} ang=${st.zeroState.name.take(5)}(%.1f,%.1f,%.1f)".format(st.angleX, st.angleY, st.angleZ) +
                         (if (l == null) "" else " g=(%.2f,%.2f,%.2f) a=(%.2f,%.2f,%.2f) T=%.1fC"
-                            .format(l.gx, l.gy, l.gz, l.ax, l.ay, l.az, l.temperatureC)),
+                            .format(l.gx, l.gy, l.gz, l.ax, l.ay, l.az, l.temperatureC)) +
+                        (tracker.latest()?.let { ps ->
+                            val (y, pi, r) = PanelController.headYpr(ps.q)
+                            " pose=${if (ps.calibrated) "cal" else "UNCAL"}(y=%.1f,p=%.1f,r=%.1f) bias=(%.2f,%.2f,%.2f)"
+                                .format(y, pi, r, ps.biasDegPerS.x, ps.biasDegPerS.y, ps.biasDegPerS.z)
+                        } ?: ""),
                 )
             }
         }

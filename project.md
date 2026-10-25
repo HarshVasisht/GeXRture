@@ -474,6 +474,15 @@ Known M1 limitations carried into M2: ~3% of IMU samples lost in short gaps (hyp
 
 Next: M2 (one touch-controlled spatial panel on display "xbx a01+", 1920×1080 @60 Hz, PRESENTATION).
 
+**2026-10-25 — Claude Code — M2 first build (branch `feature/m2-spatial-panel`), NOT yet tested on hardware**
+- Built:
+  - `pose/` (Quat, Mahony filter kp=1.0 ki=0.02, per-session still-window gyro bias, IMU→GL axis map from measured conventions with a "flip nod/tilt" fallback).
+  - `panel/` (PanelController: follow/pin/recenter, drag/pinch, FOV calibration, auto-recenter on a new tracking frame; GLES2 renderer at display vsync with tints: yellow = calibrating, red = tracking lost/frozen; Presentation on the first PRESENTATION display).
+  - Phone control page ("🕶 Spatial panel (M2)") with touchpad + buttons. PANEL stats lines (fps, max frame interval, pose age, head YPR) every 10 s in Export. No camera permission involved.
+- Design choices: one flat mono panel (no SBS); pinned panel kept upright in the world frame; yaw uncorrected (Recenter); FOV default 25.8° vertical from the upstream 50° diagonal claim, adjustable; no pose prediction yet (pose age is measured instead).
+- Automated: 23/23 unit tests (8 protocol, 9 pose incl. measured-convention end-to-end cases, 6 panel geometry).
+- Known assumption to verify first on device: nod-up sign (X = left). If nod/tilt move the panel the wrong way, use Flip.
+
 ### Handoff entry template
 
 - Date / agent / branch / commit:
