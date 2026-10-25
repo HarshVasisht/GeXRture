@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- USB device filter for XREAL glasses.
+     Vendor ID 0x3318 = 13080 decimal.
+     Product IDs sourced from XRLinuxDriver v2.11.3 (xreal.c).
+     ⚠️ UNVERIFIED: These are upstream-reported IDs. The owner's
+     actual USB descriptors have not been captured yet. -->
+<resources>
+    <!-- XREAL xbx a01+ (primary target) -->
+    <usb-device vendor-id="13080" product-id="1090" />
+    <!-- XREAL xbx a01 -->
+    <usb-device vendor-id="13080" product-id="1088" />
+    <!-- XREAL Air -->
+    <usb-device vendor-id="13080" product-id="1060" />
+    <!-- XREAL Air 2 -->
+    <usb-device vendor-id="13080" product-id="1064" />
+    <!-- XREAL Air 2 Pro -->
+    <usb-device vendor-id="13080" product-id="1074" />
+    <!-- XREAL Air 2 Ultra -->
+    <usb-device vendor-id="13080" product-id="1062" />
+    <!-- XREAL One Pro (variant 1) -->
+    <usb-device vendor-id="13080" product-id="1077" />
+    <!-- XREAL One Pro (variant 2) -->
+    <usb-device vendor-id="13080" product-id="1078" />
+    <!-- XREAL One (variant 1) -->
+    <usb-device vendor-id="13080" product-id="1079" />
+    <!-- XREAL One (variant 2) -->
+    <usb-device vendor-id="13080" product-id="1080" />
+    <!-- XREAL One S (variant 1) -->
+    <usb-device vendor-id="13080" product-id="1086" />
+    <!-- XREAL One S (variant 2) -->
+    <usb-device vendor-id="13080" product-id="1085" />
+</resources>
